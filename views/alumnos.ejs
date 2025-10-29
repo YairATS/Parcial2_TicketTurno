@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>Lista de alumnos</p>
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>CURP</th>
+          <th>Nombre Completo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (alumnos && alumnos.length > 0) { %>
+          <% alumnos.forEach(alumno => { %>
+            <tr>
+              <td><%= alumno.curp %></td>
+              <td><%= alumno.nombre_completo %></td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="3">No hay usuarios disponibles</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+    
+</body>
+</html>

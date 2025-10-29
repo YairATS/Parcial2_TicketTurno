@@ -14,10 +14,23 @@ app.use(express.json());
 //Register view engine
 app.set('view engine', 'ejs');
 
+app.use(express.static('public'));
+
 // Test route
 app.get('/', (req, res) => {
     /* res.json({ message: 'API is running' }); */
-    res.render('home');
+    res.render('ticket');
+});
+
+app.get('/alumnos', async (req, res) => {
+    try{
+        const respuesta = await fetch('http://localhost:3000/api/alumnos');
+        const alumnos = await respuesta.json();
+        res.render('alumnos', { alumnos });
+    } catch (error) {
+        console.error("Error al obtener datos:", error);
+        res.status(500).send("Error al obtener usuarios");
+    }
 });
 
 // Routes
