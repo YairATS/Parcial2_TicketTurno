@@ -1,6 +1,9 @@
 import express from 'express';
 import municipiosRouter from './routes/MunicipioRoutes.js';
 import AlumnoRoutes from './routes/AlumnoRoutes.js';
+import AsuntoRoutes from './routes/AsuntoRoutes.js';
+import NivelRoutes from './routes/NivelRoutes.js';
+import TurnoRoutes from './routes/TurnoRoutes.js';
 import { sequelize } from './models/database.js';
 
 const app = express();
@@ -20,6 +23,9 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/municipios', municipiosRouter);
 app.use('/api/alumnos', AlumnoRoutes);
+app.use('/api/asuntos', AsuntoRoutes);
+app.use('/api/niveles', NivelRoutes);
+app.use('/api/turnos', TurnoRoutes);
 
 // Error handling
 app.use((req, res) => {

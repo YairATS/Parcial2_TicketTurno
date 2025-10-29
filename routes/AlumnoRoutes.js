@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllAlumnos, getAlumno, getAlumnoByCurp, createAlumno, updateAlumno, deleteAlumno } from '../controllers/alumnoController.js';
+import { getAllAlumnos, getAlumno, getAlumnoByCurp, createAlumno, updateAlumno, deleteAlumno } from '../controllers/AlumnoController.js';
 
 const router = express.Router();
 
