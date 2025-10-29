@@ -1,5 +1,6 @@
 import express from 'express';
 import municipiosRouter from './routes/MunicipioRoutes.js';
+import AlumnoRoutes from './routes/AlumnoRoutes.js';
 import { sequelize } from './models/database.js';
 
 const app = express();
@@ -7,13 +8,18 @@ const app = express();
 // Middleware
 app.use(express.json());
 
+//Register view engine
+app.set('view engine', 'ejs');
+
 // Test route
 app.get('/', (req, res) => {
-    res.json({ message: 'API is running' });
+    /* res.json({ message: 'API is running' }); */
+    res.render('home');
 });
 
 // Routes
 app.use('/api/municipios', municipiosRouter);
+app.use('/api/alumnos', AlumnoRoutes);
 
 // Error handling
 app.use((req, res) => {
