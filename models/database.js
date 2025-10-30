@@ -5,7 +5,7 @@ import 'dotenv/config';
 class Database {
   constructor() {
     if (!Database.instance) {
-      this.sequelize = new Sequelize('Turno_Ticket', 'postgres', 'Yair316@!', {
+      this.sequelize = new Sequelize('Turno_Ticket', 'postgres', 'your_password', {
         host: 'localhost',
         dialect: 'postgres',
         logging: false,
