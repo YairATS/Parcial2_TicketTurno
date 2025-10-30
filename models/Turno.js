@@ -10,7 +10,6 @@ export default (sequelize) => {
     },
     numero_turno: {
       type: DataTypes.STRING(20),
-      allowNull: false,
       unique: true
     },
     id_alumno: {

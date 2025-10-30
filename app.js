@@ -3,7 +3,9 @@ import municipiosRouter from './routes/MunicipioRoutes.js';
 import AlumnoRoutes from './routes/AlumnoRoutes.js';
 import AsuntoRoutes from './routes/AsuntoRoutes.js';
 import NivelRoutes from './routes/NivelRoutes.js';
+import TurnoPublicoRoutes from './routes/TurnoPublicoRoutes.js'; // ← NUEVO
 import TurnoRoutes from './routes/TurnoRoutes.js';
+
 import { sequelize } from './models/database.js';
 
 const app = express();
@@ -18,7 +20,6 @@ app.use(express.static('public'));
 
 // Test route
 app.get('/', (req, res) => {
-    /* res.json({ message: 'API is running' }); */
     res.render('ticket');
 });
 
@@ -39,6 +40,7 @@ app.use('/api/alumnos', AlumnoRoutes);
 app.use('/api/asuntos', AsuntoRoutes);
 app.use('/api/niveles', NivelRoutes);
 app.use('/api/turnos', TurnoRoutes);
+app.use('/api/turnos/public', TurnoPublicoRoutes); // ← NUEVO
 
 // Error handling
 app.use((req, res) => {
@@ -59,12 +61,11 @@ sequelize.authenticate()
             console.log(`✅ Server running on http://localhost:${PORT}`);
             console.log('📚 Available routes:');
             console.log('   GET  /');
-            console.log('   GET  /api/municipios');
-            console.log('   GET  /api/municipios/:id');
-            console.log('   POST /api/municipios');
+            console.log('   POST /api/turnos/public/solicitar'); // ← NUEVO
+            console.log('   GET  /api/turnos/public/consultar/:curp/:numeroTurno'); // ← NUEVO
         });
     })
     .catch(err => {
         console.error('❌ Database connection failed:', err);
         process.exit(1);
-    })
+    });
