@@ -46,26 +46,31 @@ CREATE TABLE turnos (
     estado VARCHAR(20) DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'en_atencion', 'atendido', 'cancelado'))
 );
 
--- Función simplificada para generar número de turno
+-- Función corregida para generar número de turno
 CREATE OR REPLACE FUNCTION generar_numero_turno()
 RETURNS TRIGGER AS $$
 DECLARE
     abreviatura_municipio VARCHAR(4);
+    municipio_id INTEGER;
     contador_dia INTEGER;
 BEGIN
-    -- Obtener abreviatura del municipio (primeras 4 letras en mayúsculas)
-    SELECT UPPER(SUBSTRING(m.nombre_municipio FROM 1 FOR 4))
-    INTO abreviatura_municipio
+    -- Obtener el municipio del alumno
+    SELECT a.id_municipio INTO municipio_id
     FROM alumnos a
-    JOIN municipios m ON a.id_municipio = m.id_municipio
     WHERE a.id_alumno = NEW.id_alumno;
     
-    -- Contar turnos de hoy para este municipio
+    -- Obtener abreviatura del municipio
+    SELECT UPPER(SUBSTRING(nombre_municipio FROM 1 FOR 4))
+    INTO abreviatura_municipio
+    FROM municipios 
+    WHERE id_municipio = municipio_id;
+    
+    -- Contar TODOS los turnos de hoy para ESTE MUNICIPIO
     SELECT COUNT(*) + 1 INTO contador_dia
     FROM turnos t
     JOIN alumnos a ON t.id_alumno = a.id_alumno
     WHERE DATE(t.fecha_creacion) = CURRENT_DATE
-    AND a.id_municipio = (SELECT id_municipio FROM alumnos WHERE id_alumno = NEW.id_alumno);
+    AND a.id_municipio = municipio_id;
     
     -- Generar número de turno: ABRE-001
     NEW.numero_turno := abreviatura_municipio || '-' || LPAD(contador_dia::TEXT, 3, '0');
