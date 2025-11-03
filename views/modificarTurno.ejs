@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Turno</title>
+    <link rel="stylesheet" href="/ticket.css">
+    <style>
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .search-section {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .form-modificar {
+            display: none;
+        }
+        
+        .form-modificar.active {
+            display: block;
+        }
+        
+        .info-turno {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .info-turno h3 {
+            margin-top: 0;
+            color: #1976D2;
+        }
+        
+        .info-item {
+            margin: 10px 0;
+        }
+        
+        .info-item strong {
+            display: inline-block;
+            width: 150px;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .mensaje-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .mensaje-exito {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <%- include('./partials/navbar') %>
+    </header>
+    
+
+    <div class="container">
+        <header class="header">
+            <h1>Modificar Turno</h1>
+        </header>
+        
+        <!-- SECCIÓN DE BÚSQUEDA -->
+        <div class="search-section">
+            <h2>Buscar mi turno</h2>
+            <p>Ingrese su CURP y número de turno para buscar y modificar su solicitud.</p>
+
+            <br/>
+            
+            <div class="row">
+                <div class="field-group">
+                    <label for="search-curp">CURP:</label>
+                    <input type="text" id="search-curp" maxlength="18" placeholder="Ej: TOSY031007HCLRLRA8" required>
+                </div>
+                <div class="field-group">
+                    <label for="search-turno">Número de Turno:</label>
+                    <input type="text" id="search-turno" placeholder="Ej: SALT-001" required>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button type="button" class="submit-btn" onclick="buscarTurno()">Buscar Turno</button>
+                <button type="button" class="btn-secondary" onclick="window.location.href='/'">Volver</button>
+            </div>
+            
+            <div id="mensaje-busqueda"></div>
+        </div>
+        
+        <!-- SECCIÓN DE MODIFICACIÓN (Oculta inicialmente) -->
+        <div class="form-modificar" id="form-modificar">
+            <div class="info-turno">
+                <h3>Información del Turno</h3>
+                <div class="info-item">
+                    <strong>Número de Turno:</strong>
+                    <span id="info-numero-turno"></span>
+                </div>
+                <div class="info-item">
+                    <strong>Fecha de Creación:</strong>
+                    <span id="info-fecha"></span>
+                </div>
+                <div class="info-item">
+                    <strong>Estado:</strong>
+                    <span id="info-estado"></span>
+                </div>
+            </div>
+            
+            <h2>Modificar Datos</h2>
+            <form id="modificar-form">
+                <input type="hidden" id="turno-id">
+                <input type="hidden" id="alumno-id">
+                
+                <div class="row">
+                    <div class="field-group full-width">
+                        <label for="mod-nombre-completo">Nombre completo:</label>
+                        <input type="text" id="mod-nombre-completo" required>
+                    </div>
+                    <div class="field-group small">
+                        <label for="mod-curp">CURP:</label>
+                        <input type="text" id="mod-curp" maxlength="18" required readonly>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="field-group">
+                        <label for="mod-nombre">Nombre:</label>
+                        <input type="text" id="mod-nombre" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="mod-paterno">Paterno:</label>
+                        <input type="text" id="mod-paterno" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="mod-materno">Materno:</label>
+                        <input type="text" id="mod-materno">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="field-group small">
+                        <label for="mod-telefono">Teléfono:</label>
+                        <input type="tel" id="mod-telefono">
+                    </div>
+                    <div class="field-group small">
+                        <label for="mod-celular">Celular:</label>
+                        <input type="tel" id="mod-celular">
+                    </div>
+                    <div class="field-group small">
+                        <label for="mod-correo">Correo:</label>
+                        <input type="email" id="mod-correo">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="field-group medium">
+                        <label for="mod-nivel">Nivel educativo:</label>
+                        <select id="mod-nivel" required>
+                            <option value="">Seleccione Nivel</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="field-group medium">
+                        <label for="mod-municipio">Municipio:</label>
+                        <select id="mod-municipio" required>
+                            <option value="">Seleccione Municipio</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="field-group full-width">
+                        <label for="mod-asunto">Asunto:</label>
+                        <select id="mod-asunto" required>
+                            <option value="">Seleccione Asunto</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="button-container">
+                    <button type="button" class="submit-btn" onclick="guardarCambios()">Guardar Cambios</button>
+                    <button type="button" class="btn-secondary" onclick="cancelarModificacion()">Cancelar</button>
+                </div>
+                
+                <div id="mensaje-modificacion"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let turnoActual = null;
+        let alumnoActual = null;
+
+        // Cargar catálogos al inicio
+        window.addEventListener('DOMContentLoaded', function() {
+            cargarCatalogos();
+        });
+
+        async function cargarCatalogos() {
+            try {
+                // Cargar niveles
+                const responseNiveles = await fetch('/api/niveles');
+                const niveles = await responseNiveles.json();
+                const nivelSelect = document.getElementById('mod-nivel');
+                niveles.forEach(nivel => {
+                    const option = document.createElement('option');
+                    option.value = nivel.id_nivel;
+                    option.textContent = nivel.nombre_nivel;
+                    nivelSelect.appendChild(option);
+                });
+
+                // Cargar municipios
+                const responseMunicipios = await fetch('/api/municipios');
+                const municipios = await responseMunicipios.json();
+                const municipioSelect = document.getElementById('mod-municipio');
+                municipios.forEach(municipio => {
+                    const option = document.createElement('option');
+                    option.value = municipio.id_municipio;
+                    option.textContent = municipio.nombre_municipio;
+                    municipioSelect.appendChild(option);
+                });
+
+                // Cargar asuntos
+                const responseAsuntos = await fetch('/api/asuntos');
+                const asuntos = await responseAsuntos.json();
+                const asuntoSelect = document.getElementById('mod-asunto');
+                asuntos.forEach(asunto => {
+                    const option = document.createElement('option');
+                    option.value = asunto.id_asunto;
+                    option.textContent = asunto.nombre_asunto;
+                    asuntoSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error al cargar catálogos:', error);
+            }
+        }
+
+        async function buscarTurno() {
+            const curp = document.getElementById('search-curp').value.trim().toUpperCase();
+            const numeroTurno = document.getElementById('search-turno').value.trim().toUpperCase();
+            const mensajeDiv = document.getElementById('mensaje-busqueda');
+
+            if (!curp || !numeroTurno) {
+                mensajeDiv.innerHTML = '<div class="mensaje-error">Por favor ingrese CURP y número de turno</div>';
+                return;
+            }
+
+            mensajeDiv.innerHTML = '<p>Buscando...</p>';
+
+            try {
+                const response = await fetch(`/api/turnos/public/consultar/${curp}/${numeroTurno}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    turnoActual = data.turno;
+                    alumnoActual = data.alumno;
+                    mostrarFormularioModificacion(data);
+                    mensajeDiv.innerHTML = '';
+                } else {
+                    mensajeDiv.innerHTML = `<div class="mensaje-error">${data.error}</div>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mensajeDiv.innerHTML = '<div class="mensaje-error">Error al buscar el turno</div>';
+            }
+        }
+
+        function mostrarFormularioModificacion(data) {
+            // Mostrar información del turno
+            document.getElementById('info-numero-turno').textContent = data.turno.numero_turno;
+            document.getElementById('info-fecha').textContent = new Date(data.turno.fecha_creacion).toLocaleString('es-MX');
+            document.getElementById('info-estado').textContent = data.turno.estado.toUpperCase();
+
+            // Llenar formulario con datos actuales
+            document.getElementById('turno-id').value = data.turno.id;
+            document.getElementById('alumno-id').value = data.alumno.id;
+            document.getElementById('mod-nombre-completo').value = data.alumno.nombre_completo;
+            document.getElementById('mod-curp').value = data.alumno.curp;
+            document.getElementById('mod-nombre').value = data.alumno.nombre;
+            document.getElementById('mod-paterno').value = data.alumno.paterno;
+            document.getElementById('mod-materno').value = data.alumno.materno;
+            document.getElementById('mod-materno').value = data.alumno.materno || '';
+            document.getElementById('mod-telefono').value = data.alumno.telefono || '';
+            document.getElementById('mod-celular').value = data.alumno.celular || '';
+            document.getElementById('mod-correo').value = data.alumno.correo || '';
+            document.getElementById('mod-nivel').value = data.alumno.id_nivel;
+            document.getElementById('mod-municipio').value = data.alumno.id_municipio;
+            document.getElementById('mod-asunto').value = data.turno.id_asunto;
+
+            // Auto-actualizar nombre completo
+            ['mod-nombre', 'mod-paterno', 'mod-materno'].forEach(id => {
+                document.getElementById(id).addEventListener('input', actualizarNombreCompleto);
+            });
+
+            // Mostrar el formulario
+            document.getElementById('form-modificar').classList.add('active');
+            document.getElementById('form-modificar').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function actualizarNombreCompleto() {
+            const nombre = document.getElementById('mod-nombre').value.trim();
+            const paterno = document.getElementById('mod-paterno').value.trim();
+            const materno = document.getElementById('mod-materno').value.trim();
+            
+            const nombreCompleto = [nombre, paterno, materno]
+                .filter(parte => parte.length > 0)
+                .join(' ');
+            
+            document.getElementById('mod-nombre-completo').value = nombreCompleto;
+        }
+
+        async function guardarCambios() {
+            const curp = document.getElementById('mod-curp').value;
+            const numeroTurno = turnoActual.numero_turno;
+            const mensajeDiv = document.getElementById('mensaje-modificacion');
+
+            const datosActualizados = {
+                alumno: {
+                    nombre_completo: document.getElementById('mod-nombre-completo').value.trim(),
+                    nombre: document.getElementById('mod-nombre').value.trim(),
+                    paterno: document.getElementById('mod-paterno').value.trim(),
+                    materno: document.getElementById('mod-materno').value.trim() || null,
+                    telefono: document.getElementById('mod-telefono').value.trim() || null,
+                    celular: document.getElementById('mod-celular').value.trim() || null,
+                    correo: document.getElementById('mod-correo').value.trim() || null,
+                    id_nivel: parseInt(document.getElementById('mod-nivel').value),
+                    id_municipio: parseInt(document.getElementById('mod-municipio').value)
+                },
+                turno: {
+                    id_asunto: parseInt(document.getElementById('mod-asunto').value)
+                }
+            };
+
+            mensajeDiv.innerHTML = '<p>Guardando cambios...</p>';
+
+            try {
+                const response = await fetch(`/api/turnos/public/modificar/${curp}/${numeroTurno}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datosActualizados)
+                });
+
+                const resultado = await response.json();
+
+                if (response.ok) {
+                    mensajeDiv.innerHTML = '<div class="mensaje-exito">✅ Cambios guardados exitosamente</div>';
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    mensajeDiv.innerHTML = `<div class="mensaje-error">${resultado.error}</div>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mensajeDiv.innerHTML = '<div class="mensaje-error">Error al guardar los cambios</div>';
+            }
+        }
+
+        function cancelarModificacion() {
+            document.getElementById('form-modificar').classList.remove('active');
+            document.getElementById('search-curp').value = '';
+            document.getElementById('search-turno').value = '';
+            document.getElementById('mensaje-busqueda').innerHTML = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
+

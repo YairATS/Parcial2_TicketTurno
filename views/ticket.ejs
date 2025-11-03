@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket de Turno</title>
     <link rel="stylesheet" href="/ticket.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+
+    <header class="header">
+        <%- include('./partials/navbar') %>
+    </header>
+        
     <div class="container">
-        <header class="header">
-            <h1>Ticket de Turno</h1>
-        </header>
+        
         
         <form class="form" id="ticket-form" method="POST" action="#">
             <div class="row">
@@ -78,6 +82,17 @@
                     <select id="asunto" name="asunto" required>
                         <option value="" disabled selected>Seleccione Asunto</option>
                     </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field-group full-width" style="text-align: center;">
+                    <p style="margin: 10px 0;">
+                        ¿Ya tienes un turno? 
+                        <a href="/modificar_turno" style="color: #007bff; text-decoration: none; font-weight: bold;">
+                            Modificar mi solicitud
+                        </a>
+                    </p>
                 </div>
             </div>
             
@@ -332,9 +347,55 @@
         }
     }
 
-    // Mostrar mensaje de éxito
     function mostrarExito(resultado) {
-        alert(`✅ Turno generado exitosamente!\n\nNúmero de turno: ${resultado.turno.numero_turno}\nCURP: ${resultado.alumno.curp}\n\nGuarde estos datos para consultar su turno.`);
+        console.log('✅ Resultado completo:', resultado); // Para debug
+        
+        // Mostrar alert con información del turno
+        alert(
+            `✅ Turno generado exitosamente!\n\n` +
+            `Número de turno: ${resultado.turno.numero_turno}\n` +
+            `CURP: ${resultado.alumno.curp}\n\n` +
+            `A continuación se descargará su comprobante en PDF.`
+        );
+        
+        // Verificar que existe la URL del PDF
+        if (resultado.pdfUrl) {
+            console.log('📄 URL del PDF:', resultado.pdfUrl);
+            
+            // MÉTODO 1: Abrir en nueva pestaña (recomendado para visualizar)
+            const ventanaPDF = window.open(resultado.pdfUrl, '_blank');
+            
+            // Verificar si se bloqueó el popup
+            if (!ventanaPDF || ventanaPDF.closed || typeof ventanaPDF.closed === 'undefined') {
+                // Si el popup fue bloqueado, ofrecer descarga directa
+                console.warn('⚠️ Popup bloqueado, intentando descarga directa...');
+                
+                const descargar = confirm(
+                    'El navegador bloqueó la ventana emergente.\n\n' +
+                    '¿Desea descargar el PDF directamente?'
+                );
+                
+                if (descargar) {
+                    descargarPDF(resultado.pdfUrl, resultado.turno.numero_turno);
+                }
+            }
+            
+            // MÉTODO 2: También crear un botón de descarga alternativo
+            setTimeout(() => {
+                const descargarAhora = confirm(
+                    '¿Desea también descargar el PDF en su equipo?\n\n' +
+                    '(Además de visualizarlo en el navegador)'
+                );
+                
+                if (descargarAhora) {
+                    descargarPDF(resultado.pdfUrl, resultado.turno.numero_turno);
+                }
+            }, 1000);
+            
+        } else {
+            console.error('❌ No se encontró la URL del PDF en la respuesta');
+            alert('El turno se generó correctamente, pero no se pudo generar el PDF. Contacte al administrador.');
+        }
         
         // Limpiar formulario
         form.reset();
@@ -353,6 +414,23 @@
         const submitBtn = document.getElementById('submit-btn');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Generar Turno';
+    }
+
+    // Función auxiliar para forzar la descarga del PDF
+    function descargarPDF(url, numeroTurno) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ticket-${numeroTurno}.pdf`;
+        link.target = '_blank';
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        // Limpiar después de un momento
+        setTimeout(() => {
+            document.body.removeChild(link);
+        }, 100);
     }
 
     // Mostrar mensaje de error

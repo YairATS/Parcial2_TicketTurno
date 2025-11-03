@@ -14,7 +14,7 @@ class TurnoRepository {
     }
 
     async findByNumeroTurno (numeroTurno){
-        return await Turno.findOne({where: {numero_Turno: numeroTurno}});
+        return await Turno.findOne({where: {numero_turno: numeroTurno}});
     }
 
     async update (id, data) {

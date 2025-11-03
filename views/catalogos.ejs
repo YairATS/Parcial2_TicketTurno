@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catálogos - Sistema de Turnos</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f6fa;
+      }
+
+      .container {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: 250px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .sidebar-header {
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 20px;
+      }
+
+      .sidebar-header h2 {
+        font-size: 20px;
+        margin-bottom: 5px;
+      }
+
+      .sidebar-header p {
+        font-size: 12px;
+        opacity: 0.8;
+      }
+
+      .menu {
+        list-style: none;
+      }
+
+      .menu-item {
+        margin-bottom: 10px;
+      }
+
+      .menu-item a {
+        display: block;
+        padding: 12px 15px;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background 0.3s;
+      }
+
+      .menu-item a:hover,
+      .menu-item a.active {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .menu-item.logout a {
+        background: rgba(255, 255, 255, 0.1);
+        margin-top: 20px;
+      }
+
+      .menu-item.logout a:hover {
+        background: rgba(255, 0, 0, 0.3);
+      }
+
+      /* MAIN CONTENT */
+      .main-content {
+        margin-left: 250px;
+        flex: 1;
+        padding: 30px;
+      }
+
+      .header {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        font-size: 28px;
+        color: #333;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+      }
+
+      /* TABS */
+      .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ddd;
+      }
+
+      .tab {
+        padding: 12px 24px;
+        background: white;
+        border: none;
+        border-radius: 5px 5px 0 0;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        color: #666;
+        transition: all 0.3s;
+      }
+
+      .tab:hover {
+        background: #f5f6fa;
+      }
+
+      .tab.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      /* CARD */
+      .card {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: none;
+      }
+
+      .card.active {
+        display: block;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .card-header h2 {
+        color: #333;
+        font-size: 24px;
+      }
+
+      .btn-add {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .btn-add:hover {
+        opacity: 0.9;
+      }
+
+      /* TABLA */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      table th {
+        background: #f5f6fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 14px;
+        color: #666;
+        border-bottom: 2px solid #ddd;
+      }
+
+      table td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+      }
+
+      table tr:hover {
+        background: #f8f9fa;
+      }
+
+      /* BOTONES DE ACCIÓN */
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn-edit,
+      .btn-delete {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        transition: opacity 0.3s;
+      }
+
+      .btn-edit {
+        background: #3498db;
+        color: white;
+      }
+
+      .btn-delete {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .btn-edit:hover,
+      .btn-delete:hover {
+        opacity: 0.8;
+      }
+
+      /* MODAL */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.show {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      .modal-content h3 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #666;
+        font-weight: bold;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+
+      .modal-actions button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .btn-cancel {
+        background: #95a5a6;
+        color: white;
+      }
+
+      .btn-save {
+        background: #27ae60;
+        color: white;
+      }
+
+      .btn-cancel:hover,
+      .btn-save:hover {
+        opacity: 0.9;
+      }
+
+      /* MENSAJES */
+      .message {
+        padding: 12px 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: none;
+      }
+
+      .message.show {
+        display: block;
+      }
+
+      .message.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .message.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      /* LOADING */
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 200px;
+        }
+
+        .main-content {
+          margin-left: 200px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .sidebar {
+          display: none;
+        }
+
+        .main-content {
+          margin-left: 0;
+        }
+
+        .tabs {
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>🎫 Sistema de Turnos</h2>
+          <p>Panel Administrativo</p>
+        </div>
+        <ul class="menu">
+          <li class="menu-item">
+            <a href="/admin/dashboard">📊 Dashboard</a>
+          </li>
+          <li class="menu-item">
+            <a href="/admin/turnos">🎟️ Gestión de Turnos</a>
+          </li>
+          <li class="menu-item">
+            <a href="/admin/catalogos" class="active">📚 Catálogos</a>
+          </li>
+          <li class="menu-item logout">
+            <a href="#" onclick="cerrarSesion()">🚪 Cerrar Sesión</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <div class="header">
+          <h1>Gestión de Catálogos</h1>
+          <div class="user-info">
+            <div class="user-avatar" id="user-avatar"></div>
+            <span id="user-name"></span>
+          </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+          <button class="tab active" onclick="cambiarTab('municipios')">
+            Municipios
+          </button>
+          <button class="tab" onclick="cambiarTab('niveles')">Niveles</button>
+          <button class="tab" onclick="cambiarTab('asuntos')">Asuntos</button>
+        </div>
+
+        <!-- CARD MUNICIPIOS -->
+        <div class="card active" id="card-municipios">
+          <div id="message-municipios" class="message"></div>
+
+          <div class="card-header">
+            <h2>Catálogo de Municipios</h2>
+            <button class="btn-add" onclick="abrirModalNuevoMunicipio()">
+              ➕ Nuevo Municipio
+            </button>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre del Municipio</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-municipios">
+              <tr>
+                <td colspan="3" class="loading">Cargando municipios...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- CARD NIVELES -->
+        <div class="card" id="card-niveles">
+          <div id="message-niveles" class="message"></div>
+          <div class="card-header">
+            <h2>Catálogo de Niveles</h2>
+            <button class="btn-add" onclick="abrirModalNuevoNivel()">➕ Nuevo Nivel</button>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre del Nivel</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-niveles">
+              <tr>
+                <td colspan="3" class="loading">Cargando niveles</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- CARD ASUNTOS -->
+        <div class="card" id="card-asuntos">
+          <div id="message-asuntos" class="message"></div>
+          <div class="card-header">
+            <h2>Catálogo de Asuntos</h2>
+            <button class="btn-add" onclick="abrirModalNuevoAsunto()">➕ Nuevo Asunto</button>
+          </div>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre del Asunto</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-asuntos">
+              <tr>
+                <td colspan="3" class="loading">Cargando asuntos</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- MODAL MUNICIPIO -->
+    <div class="modal" id="modal-municipio">
+      <div class="modal-content">
+        <h3 id="modal-municipio-title">Nuevo Municipio</h3>
+
+        <form id="form-municipio">
+          <input type="hidden" id="municipio-id" />
+
+          <div class="form-group">
+            <label for="municipio-nombre">Nombre del Municipio *</label>
+            <input
+              type="text"
+              id="municipio-nombre"
+              placeholder="Ej: Saltillo"
+              required
+              maxlength="100"
+            />
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-cancel"
+              onclick="cerrarModalMunicipio()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-save">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL NIVEL -->
+
+    <div class="modal" id="modal-nivel">
+      <div class="modal-content">
+        <h3 id="modal-nivel-title">Nuevo Municipio</h3>
+
+        <form id="form-nivel">
+          <input type="hidden" id="nivel-id" />
+
+          <div class="form-group">
+            <label for="nivel-nombre">Nombre del Nivel *</label>
+            <input
+              type="text"
+              id="nivel-nombre"
+              required
+              maxlength="100"
+            />
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-cancel"
+              onclick="cerrarModalNivel()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-save">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL ASUNTO -->
+     <div class="modal" id="modal-asunto">
+      <div class="modal-content">
+        <h3 id="modal-asunto-title">Nuevo Asunto</h3>
+
+        <form id="form-asunto">
+          <input type="hidden" id="asunto-id" />
+
+          <div class="form-group">
+            <label for="asunto-nombre">Nombre del Asunto *</label>
+            <input
+              type="text"
+              id="asunto-nombre"
+              required
+              maxlength="100"
+            />
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-cancel"
+              onclick="cerrarModalAsunto()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-save">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    
+
+
+    <script>
+      /* const token = localStorage.getItem('token');
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+
+        // Verificar autenticación
+        if (!token || !usuario.nombre) {
+            window.location.href = '/admin/login';
+        }
+
+        // Mostrar info del usuario
+        document.getElementById('user-name').textContent = usuario.nombre;
+        document.getElementById('user-avatar').textContent = usuario.nombre.charAt(0).toUpperCase(); */
+
+      // Cargar municipios al inicio
+      cargarMunicipios();
+
+
+      // ==================== FUNCIONES DE TABS ====================
+
+      function cambiarTab(tab) {
+        // Cambiar clase active en tabs
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.remove("active"));
+        event.target.classList.add("active");
+
+        // Cambiar clase active en cards
+        document
+          .querySelectorAll(".card")
+          .forEach((c) => c.classList.remove("active"));
+        document.getElementById(`card-${tab}`).classList.add("active");
+
+        // Cargar datos según el tab
+        if (tab === "municipios") {
+          cargarMunicipios();
+        } else if (tab === "niveles") {
+          cargarNiveles(); // Próximamente
+        } else if (tab === "asuntos") {
+          cargarAsuntos(); // Próximamente
+        }
+      }
+
+      // ==================== CRUD MUNICIPIOS ====================
+
+      async function cargarMunicipios() {
+        try {
+          const response = await fetch("/api/municipios");
+          const municipios = await response.json();
+
+          const tbody = document.getElementById("tabla-municipios");
+
+          if (municipios.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="3" style="text-align: center;">No hay municipios registrados</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = municipios
+            .map(
+              (m) => `
+                    <tr>
+                        <td>${m.id_municipio}</td>
+                        <td>${m.nombre_municipio}</td>
+                        <td>
+                            <div class="actions">
+                                <button class="btn-edit" onclick="editarMunicipio(${
+                                  m.id_municipio
+                                }, '${m.nombre_municipio.replace(
+                /'/g,
+                "\\'"
+              )}')">
+                                    ✏️ Editar
+                                </button>
+                                <button class="btn-delete" onclick="confirmarEliminarMunicipio(${
+                                  m.id_municipio
+                                }, '${m.nombre_municipio.replace(
+                /'/g,
+                "\\'"
+              )}')">
+                                    🗑️ Eliminar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `
+            )
+            .join("");
+        } catch (error) {
+          console.error("Error al cargar municipios:", error);
+          mostrarMensaje(
+            "municipios",
+            "Error al cargar los municipios",
+            "error"
+          );
+        }
+      }
+
+      function abrirModalNuevoMunicipio() {
+        document.getElementById("modal-municipio-title").textContent =
+          "Nuevo Municipio";
+        document.getElementById("municipio-id").value = "";
+        document.getElementById("municipio-nombre").value = "";
+        document.getElementById("modal-municipio").classList.add("show");
+      }
+
+      function editarMunicipio(id, nombre) {
+        document.getElementById("modal-municipio-title").textContent =
+          "Editar Municipio";
+        document.getElementById("municipio-id").value = id;
+        document.getElementById("municipio-nombre").value = nombre;
+        document.getElementById("modal-municipio").classList.add("show");
+      }
+
+      function cerrarModalMunicipio() {
+        document.getElementById("modal-municipio").classList.remove("show");
+      }
+
+      // Manejar submit del formulario
+      document
+        .getElementById("form-municipio")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          await guardarMunicipio();
+        });
+
+      async function guardarMunicipio() {
+        const id = document.getElementById("municipio-id").value;
+        const nombre = document.getElementById("municipio-nombre").value.trim();
+
+        if (!nombre) {
+          alert("El nombre del municipio es requerido");
+          return;
+        }
+
+        try {
+          const url = id ? `/api/municipios/${id}` : "/api/municipios";
+          const method = id ? "PUT" : "POST";
+
+          const response = await fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ nombre_municipio: nombre }),
+          });
+
+          if (response.ok) {
+            mostrarMensaje(
+              "municipios",
+              id
+                ? "Municipio actualizado correctamente"
+                : "Municipio creado correctamente",
+              "success"
+            );
+            cerrarModalMunicipio();
+            cargarMunicipios();
+          } else {
+            const error = await response.json();
+            mostrarMensaje(
+              "municipios",
+              error.error || "Error al guardar el municipio",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          mostrarMensaje("municipios", "Error de conexión", "error");
+        }
+      }
+
+      function confirmarEliminarMunicipio(id, nombre) {
+        if (
+          confirm(
+            `¿Está seguro de eliminar el municipio "${nombre}"?\n\nEsta acción no se puede deshacer.`
+          )
+        ) {
+          eliminarMunicipio(id);
+        }
+      }
+
+      async function eliminarMunicipio(id) {
+        try {
+          const response = await fetch(`/api/municipios/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            mostrarMensaje(
+              "municipios",
+              "Municipio eliminado correctamente",
+              "success"
+            );
+            cargarMunicipios();
+          } else {
+            const error = await response.json();
+            mostrarMensaje(
+              "municipios",
+              error.error || "Error al eliminar el municipio",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          mostrarMensaje("municipios", "Error de conexión", "error");
+        }
+      }
+
+      // ==================== FIN MUNICIPIOS ====================
+
+      // ==================== CRUD NIVELES ====================
+
+      async function cargarNiveles() {
+        try {
+          const response = await fetch("/api/niveles");
+          const niveles = await response.json();
+
+          const tbody = document.getElementById("tabla-niveles");
+
+          if (niveles.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="3" style="text-align: center;">No hay niveles registrados</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = niveles
+            .map(
+              (n) => `
+            <tr>
+                <td>${n.id_nivel}</td>
+                <td>${n.nombre_nivel}</td>
+                <td>
+                    <div class="actions">
+                        <button class="btn-edit" onclick="editarNivel(${
+                          n.id_nivel
+                        }, '${n.nombre_nivel.replace(/'/g, "\\'")}')">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn-delete" onclick="confirmarEliminarNivel(${
+                          n.id_nivel
+                        }, '${n.nombre_nivel.replace(/'/g, "\\'")}')">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `
+            )
+            .join("");
+        } catch (error) {
+          console.error("Error al cargar niveles:", error);
+          mostrarMensaje("niveles", "Error al cargar los niveles", "error");
+        }
+      }
+
+      function abrirModalNuevoNivel() {
+        document.getElementById("modal-nivel-title").textContent =
+          "Nuevo Nivel";
+        document.getElementById("nivel-id").value = "";
+        document.getElementById("nivel-nombre").value = "";
+        document.getElementById("modal-nivel").classList.add("show");
+      }
+
+      function editarNivel(id, nombre) {
+        document.getElementById("modal-nivel-title").textContent =
+          "Editar Nivel";
+        document.getElementById("nivel-id").value = id;
+        document.getElementById("nivel-nombre").value = nombre;
+        document.getElementById("modal-nivel").classList.add("show");
+      }
+
+      function cerrarModalNivel() {
+        document.getElementById("modal-nivel").classList.remove("show");
+      }
+
+      // Manejar submit del formulario
+      document
+        .getElementById("form-nivel")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          await guardarNivel();
+        });
+
+      async function guardarNivel() {
+        const id = document.getElementById("nivel-id").value;
+        const nombre = document.getElementById("nivel-nombre").value.trim();
+
+        if (!nombre) {
+          alert("El nombre del nivel es requerido");
+          return;
+        }
+
+        try {
+          const url = id ? `/api/niveles/${id}` : "/api/niveles";
+          const method = id ? "PUT" : "POST";
+
+          const response = await fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ nombre_nivel: nombre }),
+          });
+
+          if (response.ok) {
+            mostrarMensaje(
+              "niveles",
+              id
+                ? "Nivel actualizado correctamente"
+                : "Nivel creado correctamente",
+              "success"
+            );
+            cerrarModalNivel();
+            cargarNiveles();
+          } else {
+            const error = await response.json();
+            mostrarMensaje(
+              "niveles",
+              error.error || "Error al guardar el nivel",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          mostrarMensaje("niveles", "Error de conexión", "error");
+        }
+      }
+
+      function confirmarEliminarNivel(id, nombre) {
+        if (
+          confirm(
+            `¿Está seguro de eliminar el nivel "${nombre}"?\n\nEsta acción no se puede deshacer.`
+          )
+        ) {
+          eliminarNivel(id);
+        }
+      }
+
+      async function eliminarNivel(id) {
+        try {
+          const response = await fetch(`/api/niveles/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            mostrarMensaje(
+              "niveles",
+              "Nivel eliminado correctamente",
+              "success"
+            );
+            cargarNiveles();
+          } else {
+            const error = await response.json();
+            mostrarMensaje(
+              "niveles",
+              error.error || "Error al eliminar el nivel",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          mostrarMensaje("niveles", "Error de conexión", "error");
+        }
+      }
+
+      // ==================== CRUD Asuntos ====================
+
+      async function cargarAsuntos() {
+        try {
+          const response = await fetch("/api/asuntos");
+          const asuntos = await response.json();
+
+          const tbody = document.getElementById("tabla-asuntos");
+
+          if (asuntos.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="3" style="text-align: center;">No hay asuntos registrados</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = asuntos
+            .map(
+              (a) => `
+            <tr>
+                <td>${a.id_asunto}</td>
+                <td>${a.nombre_asunto}</td>
+                <td>
+                    <div class="actions">
+                        <button class="btn-edit" onclick="editarAsunto(${
+                          a.id_asunto
+                        }, '${a.nombre_asunto.replace(/'/g, "\\'")}')">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn-delete" onclick="confirmarEliminarAsunto(${
+                          a.id_asunto
+                        }, '${a.nombre_asunto.replace(/'/g, "\\'")}')">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `
+            )
+            .join("");
+        } catch (error) {
+          console.error("Error al cargar asuntos:", error);
+          mostrarMensaje("asuntos", "Error al cargar los asuntos", "error");
+        }
+      }
+
+      function abrirModalNuevoAsunto() {
+        document.getElementById("modal-asunto-title").textContent =
+          "Nuevo Asunto";
+        document.getElementById("asunto-id").value = "";
+        document.getElementById("asunto-nombre").value = "";
+        document.getElementById("modal-asunto").classList.add("show");
+      }
+
+      function editarAsunto(id, nombre) {
+        document.getElementById("modal-asunto-title").textContent =
+          "Editar Asunto";
+        document.getElementById("asunto-id").value = id;
+        document.getElementById("asunto-nombre").value = nombre;
+        document.getElementById("modal-asunto").classList.add("show");
+      }
+
+      function cerrarModalAsunto() {
+        document.getElementById("modal-asunto").classList.remove("show");
+      }
+
+      // Manejar submit del formulario
+      document
+        .getElementById("form-asunto")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          await guardarAsunto();
+        });
+
+      async function guardarAsunto() {
+        const id = document.getElementById("asunto-id").value;
+        const nombre = document.getElementById("asunto-nombre").value.trim();
+
+        if (!nombre) {
+          alert("El nombre del asunto es requerido");
+          return;
+        }
+
+        try {
+          const url = id ? `/api/asuntos/${id}` : "/api/asuntos";
+          const method = id ? "PUT" : "POST";
+
+          const response = await fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ nombre_asunto: nombre }),
+          });
+
+          if (response.ok) {
+            mostrarMensaje(
+              "asuntos",
+              id
+                ? "Asunto actualizado correctamente"
+                : "Asunto creado correctamente",
+              "success"
+            );
+            cerrarModalAsunto();
+            cargarAsuntos();
+          } else {
+            const error = await response.json();
+            mostrarMensaje(
+              "asuntos",
+              error.error || "Error al guardar el asunto",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          mostrarMensaje("asuntos", "Error de conexión", "error");
+        }
+      }
+
+      function confirmarEliminarAsunto(id, nombre) {
+        if (
+          confirm(
+            `¿Está seguro de eliminar el asunto "${nombre}"?\n\nEsta acción no se puede deshacer.`
+          )
+        ) {
+          eliminarAsunto(id);
+        }
+      }
+
+      async function eliminarAsunto(id) {
+        try {
+          const response = await fetch(`/api/asuntos/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            mostrarMensaje(
+              "asuntos",
+              "Asunto eliminado correctamente",
+              "success"
+            );
+            cargarAsuntos();
+          } else {
+            const error = await response.json();
+            mostrarMensaje(
+              "asuntos",
+              error.error || "Error al eliminar el asunto",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          mostrarMensaje("asuntos", "Error de conexión", "error");
+        }
+      }
+
+      // ==================== FUNCIONES AUXILIARES ====================
+
+      function mostrarMensaje(catalogo, mensaje, tipo) {
+        const messageDiv = document.getElementById(`message-${catalogo}`);
+        messageDiv.textContent = mensaje;
+        messageDiv.className = `message ${tipo} show`;
+
+        setTimeout(() => {
+          messageDiv.classList.remove("show");
+        }, 5000);
+      }
+
+      async function cerrarSesion() {
+        if (confirm("¿Está seguro de cerrar sesión?")) {
+          try {
+            await fetch("/api/auth/logout", { method: "POST" });
+          } catch (error) {
+            console.error("Error al cerrar sesión:", error);
+          }
+
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+          window.location.href = "/admin/login";
+        }
+      }
+
+      // Cerrar modal al hacer clic fuera
+      document
+        .getElementById("modal-municipio")
+        .addEventListener("click", (e) => {
+          if (e.target.id === "modal-municipio") {
+            cerrarModalMunicipio();
+          }
+        });
+    </script>
+  </body>
+</html>

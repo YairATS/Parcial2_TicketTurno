@@ -1,5 +1,5 @@
 import express from 'express';
-import { solicitarTurno, consultarTurno, modificarTurno } from '../controllers/TurnoPublicoController.js';
+import { solicitarTurno, consultarTurno, modificarTurno, generarPDFTurno } from '../controllers/TurnoPublicoController.js';
 
 const router = express.Router();
 
@@ -11,5 +11,8 @@ router.get('/consultar/:curp/:numeroTurno', consultarTurno);
 
 // Ruta para modificar un turno existente
 router.put('/modificar/:curp/:numeroTurno', modificarTurno);
+
+// Ruta para generar el PDF del turno
+router.get('/pdf/:id', generarPDFTurno);
 
 export default router;

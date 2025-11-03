@@ -34,6 +34,40 @@ app.get('/alumnos', async (req, res) => {
     }
 });
 
+app.get('/asunto', async (req, res) => {
+    res.render('asunto');
+    /* try{
+        const respuesta = await fetch('http://localhost:3000/api/asuntos');
+        const asuntos = await respuesta.json();
+        res.render('asuntos', { asuntos });
+    } catch (error) {
+        console.error("Error al obtener datos:", error);
+        res.status(500).send("Error al obtener usuarios");
+    } */
+});
+
+app.get('/nivel', async (req, res) => {
+    res.render('nivel');
+});
+
+app.get('/turno', async (req, res) => {
+    res.render('turno');
+});
+
+app.get('/municipio', async (req, res) => {
+    res.render('municipio');
+});
+
+app.get('/modificar_turno', async (req, res) => {
+    res.render('modificarTurno');
+});
+
+app.get('/catalogos', async (req, res) => {
+    res.render('catalogos');
+})
+
+
+
 // Routes
 app.use('/api/municipios', municipiosRouter);
 app.use('/api/alumnos', AlumnoRoutes);

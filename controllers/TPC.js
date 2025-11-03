@@ -1,9 +1,7 @@
 import AlumnoRepository from "../Repository/AlumnoRepository.js";
 import TurnoRepository from "../Repository/TurnoRepository.js";
-import MunicipioRepository from "../Repository/MunicipioRepository.js";
-import NivelRepository from "../Repository/NivelRepository.js";
-import AsuntoRepository from "../Repository/AsuntoRepository.js";
-import PDFService from "../services/PDFService.js";
+
+
 import { sequelize } from "../models/database.js";
 
 /**
@@ -50,10 +48,6 @@ export const solicitarTurno = async (req, res) => {
         // Confirmar la transacción
         await transaction.commit();
 
-        const municipio = await MunicipioRepository.findById(turno.id_municipio);
-        const nivel = await NivelRepository.findById(turno.id_nivel);
-        const asunto = await AsuntoRepository.findById(turno.id_asunto);
-
         // 3. Retornar respuesta exitosa
         res.status(201).json({
             mensaje: 'Turno generado exitosamente',
@@ -67,8 +61,7 @@ export const solicitarTurno = async (req, res) => {
                 numero_turno: turnoCreado.numero_turno,
                 fecha_creacion: turnoCreado.fecha_creacion,
                 estado: turnoCreado.estado
-            },
-            pdfUrl: `/api/turnos/public/pdf/${turnoCreado.id_turno}`
+            }
         });
 
     } catch (error) {
@@ -203,57 +196,5 @@ export const modificarTurno = async (req, res) => {
         await transaction.rollback();
         console.error('Error al modificar turno:', error);
         res.status(500).json({ error: 'Error al modificar el turno' });
-    }
-};
-
-/**
- * Generar y descargar PDF del turno
- */
-export const generarPDFTurno = async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // Buscar el turno con sus relaciones
-        const turno = await TurnoRepository.findById(id);
-        if (!turno) {
-            return res.status(404).json({ error: 'Turno no encontrado' });
-        }
-
-        // Obtener datos del alumno
-        const alumno = await AlumnoRepository.findById(turno.id_alumno);
-        if (!alumno) {
-            return res.status(404).json({ error: 'Alumno no encontrado' });
-        }
-
-        // Obtener información adicional
-        const municipio = await MunicipioRepository.findById(alumno.id_municipio);
-        const nivel = await NivelRepository.findById(alumno.id_nivel);
-        const asunto = await AsuntoRepository.findById(turno.id_asunto);
-
-        // Preparar datos para el PDF
-        const detalles = {
-            municipio: municipio?.nombre_municipio || 'N/A',
-            nivel: nivel?.nombre_nivel || 'N/A',
-            asunto: asunto?.nombre_asunto || 'N/A'
-        };
-
-        // Generar PDF
-        const pdfBuffer = await PDFService.generarTicketPDF(
-            turno.dataValues,
-            alumno.dataValues,
-            detalles
-        );
-
-        // Configurar headers para descarga
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=ticket-${turno.numero_turno}.pdf`);
-        res.setHeader('Content-Length', pdfBuffer.length);
-
-        // Enviar PDF
-        res.send(pdfBuffer);
-
-    } catch (error) {
-        console.error('Error al generar PDF:', error);
-        res.status(500).json({ error: 'Error al generar el PDF del turno' });
     }
 };

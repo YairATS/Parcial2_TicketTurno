@@ -1,0 +1,154 @@
+// ==================== CRUD NIVELES ====================
+
+      async function cargarAsuntos() {
+        try {
+          const response = await fetch("/api/asuntos");
+          const asuntos = await response.json();
+
+          const tbody = document.getElementById("tabla-asuntos");
+
+          if (asuntos.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="3" style="text-align: center;">No hay asuntos registrados</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = asuntos
+            .map(
+              (n) => `
+            <tr>
+                <td>${n.id_asunto}</td>
+                <td>${n.nombre_asunto}</td>
+                <td>
+                    <div class="actions">
+                        <button class="btn-edit" onclick="editarAsunto(${
+                          n.id_asunto
+                        }, '${n.nombre_asunto.replace(/'/g, "\\'")}')">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn-delete" onclick="confirmarEliminarAsunto(${
+                          n.id_asunto
+                        }, '${n.nombre_asunto.replace(/'/g, "\\'")}')">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `
+            )
+            .join("");
+        } catch (error) {
+          console.error("Error al cargar asuntos:", error);
+          mostrarMensaje("asuntos", "Error al cargar los asuntos", "error");
+        }
+      }
+
+      function abrirModalNuevoAsunto() {
+        document.getElementById("modal-asunto-title").textContent =
+          "Nuevo Asunto";
+        document.getElementById("asunto-id").value = "";
+        document.getElementById("asunto-nombre").value = "";
+        document.getElementById("modal-asunto").classList.add("show");
+      }
+
+      function editarAsunto(id, nombre) {
+        document.getElementById("modal-asunto-title").textContent =
+          "Editar Asunto";
+        document.getElementById("asunto-id").value = id;
+        document.getElementById("asunto-nombre").value = nombre;
+        document.getElementById("modal-asunto").classList.add("show");
+      }
+
+      function cerrarModalAsunto() {
+        document.getElementById("modal-asunto").classList.remove("show");
+      }
+
+      // Manejar submit del formulario
+      document
+        .getElementById("form-asunto")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          await guardarAsunto();
+        });
+
+      async function guardarAsunto() {
+        const id = document.getElementById("asunto-id").value;
+        const nombre = document.getElementById("asunto-nombre").value.trim();
+
+        if (!nombre) {
+          alert("El nombre del asunto es requerido");
+          return;
+        }
+
+        try {
+          const url = id ? `/api/asuntos/${id}` : "/api/asuntos";
+          const method = id ? "PUT" : "POST";
+
+          const response = await fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ nombre_asunto: nombre }),
+          });
+
+          if (response.ok) {
+            mostrarMensaje(
+              "asuntos",
+              id
+                ? "Asunto actualizado correctamente"
+                : "Asunto creado correctamente",
+              "success"
+            );
+            cerrarModalAsunto();
+            cargarAsuntos();
+          } else {
+            const error = await response.json();
+            mostrarMensaje(
+              "asuntos",
+              error.error || "Error al guardar el asunto",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          mostrarMensaje("asuntos", "Error de conexión", "error");
+        }
+      }
+
+      function confirmarEliminarAsunto(id, nombre) {
+        if (
+          confirm(
+            `¿Está seguro de eliminar el asunto "${nombre}"?\n\nEsta acción no se puede deshacer.`
+          )
+        ) {
+          eliminarAsunto(id);
+        }
+      }
+
+      async function eliminarAsunto(id) {
+        try {
+          const response = await fetch(`/api/asuntos/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            mostrarMensaje(
+              "asuntos",
+              "Asunto eliminado correctamente",
+              "success"
+            );
+            cargarAsuntos();
+          } else {
+            const error = await response.json();
+            mostrarMensaje(
+              "asuntos",
+              error.error || "Error al eliminar el asunto",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          mostrarMensaje("asuntos", "Error de conexión", "error");
+        }
+      }
