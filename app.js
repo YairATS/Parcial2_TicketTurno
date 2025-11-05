@@ -1,21 +1,37 @@
 import express from 'express';
+import session from 'express-session';
 import municipiosRouter from './routes/MunicipioRoutes.js';
 import AlumnoRoutes from './routes/AlumnoRoutes.js';
 import AsuntoRoutes from './routes/AsuntoRoutes.js';
 import NivelRoutes from './routes/NivelRoutes.js';
 import TurnoPublicoRoutes from './routes/TurnoPublicoRoutes.js'; // ← NUEVO
 import TurnoRoutes from './routes/TurnoRoutes.js';
-
+import AuthRoutes from './routes/AuthRoutes.js';
 import { sequelize } from './models/database.js';
+import { requireAuthView } from './middleware/auth.js';
+import AdminRoutes from './routes/AdminRoutes.js';
+
 
 const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Configurar sesiones
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'tu-secreto-de-sesion-cambiar-en-produccion',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false, // Cambiar a true en producción con HTTPS
+        httpOnly: true,
+        maxAge: 8 * 60 * 60 * 1000 // 8 horas
+    }
+}));
 
 //Register view engine
 app.set('view engine', 'ejs');
-
 app.use(express.static('public'));
 
 // Test route
@@ -23,58 +39,49 @@ app.get('/', (req, res) => {
     res.render('ticket');
 });
 
-app.get('/alumnos', async (req, res) => {
-    try{
-        const respuesta = await fetch('http://localhost:3000/api/alumnos');
-        const alumnos = await respuesta.json();
-        res.render('alumnos', { alumnos });
-    } catch (error) {
-        console.error("Error al obtener datos:", error);
-        res.status(500).send("Error al obtener usuarios");
-    }
-});
-
-app.get('/asunto', async (req, res) => {
-    res.render('asunto');
-    /* try{
-        const respuesta = await fetch('http://localhost:3000/api/asuntos');
-        const asuntos = await respuesta.json();
-        res.render('asuntos', { asuntos });
-    } catch (error) {
-        console.error("Error al obtener datos:", error);
-        res.status(500).send("Error al obtener usuarios");
-    } */
-});
-
-app.get('/nivel', async (req, res) => {
-    res.render('nivel');
-});
-
-app.get('/turno', async (req, res) => {
-    res.render('turno');
-});
-
-app.get('/municipio', async (req, res) => {
-    res.render('municipio');
-});
-
 app.get('/modificar_turno', async (req, res) => {
     res.render('modificarTurno');
 });
 
-app.get('/catalogos', async (req, res) => {
-    res.render('catalogos');
+app.get('/admin/login', (req, res) => {
+    res.render('admin/login');
+});
+
+
+// RUTAS PROTEGIDAS (Admin)
+app.get('/admin/catalogos', requireAuthView, (req, res) => {
+    res.render('admin/catalogos');
 })
 
+app.get('/admin/dashboard', requireAuthView, (req,res) => {
+    res.render('admin/dashboard');
+});
+
+// ===== RUTAS PROTEGIDAS (Admin Views) =====
+app.get('/admin/dashboard', requireAuthView, (req, res) => {
+    res.render('admin/dashboard');
+});
+
+app.get('/admin/turnos', requireAuthView, (req, res) => {  // ← AGREGAR ESTO
+    res.render('admin/turnos');
+});
+
+app.get('/admin/catalogos', requireAuthView, (req, res) => {
+    res.render('admin/catalogos');
+});
 
 
-// Routes
+
+// Public API Routes
 app.use('/api/municipios', municipiosRouter);
 app.use('/api/alumnos', AlumnoRoutes);
 app.use('/api/asuntos', AsuntoRoutes);
 app.use('/api/niveles', NivelRoutes);
 app.use('/api/turnos', TurnoRoutes);
 app.use('/api/turnos/public', TurnoPublicoRoutes); // ← NUEVO
+app.use('/api/auth', AuthRoutes);
+
+app.use('/api/admin', AdminRoutes);
 
 // Error handling
 app.use((req, res) => {

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Turnos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .captcha-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .captcha-image {
+            flex: 1;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .captcha-image:hover {
+            border-color: #667eea;
+        }
+
+        .captcha-input {
+            flex: 1;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .link-volver {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .link-volver a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .link-volver a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🔐 Acceso Administrativo</h1>
+            <p>Sistema de Gestión de Turnos</p>
+        </div>
+
+        <div id="error-message" class="error-message"></div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="usuario">Usuario</label>
+                <input type="text" id="usuario" name="usuario" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
+            </div>
+
+            <div class="form-group">
+                <label>Código de Verificación</label>
+                <div class="captcha-container">
+                    <img id="captcha-image" class="captcha-image" alt="CAPTCHA" title="Clic para recargar">
+                    <input type="text" id="captcha" name="captcha" class="captcha-input" placeholder="Ingrese el código" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login" id="btn-login">Iniciar Sesión</button>
+        </form>
+
+        <div class="link-volver">
+            <a href="/">← Volver al inicio</a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const captchaImage = document.getElementById('captcha-image');
+        const errorDiv = document.getElementById('error-message');
+        const btnLogin = document.getElementById('btn-login');
+
+        // Cargar CAPTCHA inicial
+        recargarCaptcha();
+
+        // Recargar CAPTCHA al hacer clic
+        captchaImage.addEventListener('click', recargarCaptcha);
+
+        // Manejar submit
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await iniciarSesion();
+        });
+
+        function recargarCaptcha() {
+            captchaImage.src = `/api/auth/captcha?t=${Date.now()}`;
+        }
+
+        async function iniciarSesion() {
+            const usuario = document.getElementById('usuario').value.trim();
+            const password = document.getElementById('password').value;
+            const captcha = document.getElementById('captcha').value.trim();
+
+            // Validar
+            if (!usuario || !password || !captcha) {
+                mostrarError('Todos los campos son requeridos');
+                return;
+            }
+
+            // Deshabilitar botón
+            btnLogin.disabled = true;
+            btnLogin.textContent = 'Iniciando sesión...';
+            errorDiv.classList.remove('show');
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, password, captcha })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Guardar token en localStorage
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('usuario', JSON.stringify(data.usuario));
+
+                    // Redirigir al panel de catalogos
+                    window.location.href = '/admin/catalogos';
+                } else {
+                    mostrarError(data.error || 'Error al iniciar sesión');
+                    recargarCaptcha();
+                    document.getElementById('captcha').value = '';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarError('Error de conexión. Intente nuevamente.');
+                recargarCaptcha();
+            } finally {
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'Iniciar Sesión';
+            }
+        }
+
+        function mostrarError(mensaje) {
+            errorDiv.textContent = mensaje;
+            errorDiv.classList.add('show');
+        }
+    </script>
+</body>
+</html>

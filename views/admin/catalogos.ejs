@@ -24,7 +24,7 @@
       /* SIDEBAR */
       .sidebar {
         width: 250px;
-        background: linear-gradient(135deg, #ea7a66 0%, #c6ada6 100%);
+        background: linear-gradient(180deg, #61101d 0%, #61101d 100%);
         color: white;
         padding: 20px;
         position: fixed;
@@ -111,7 +111,7 @@
       .user-avatar {
         width: 40px;
         height: 40px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #220c0c 0%, #393939 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -145,7 +145,7 @@
       }
 
       .tab.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #a21f1f 0%, #6d4f52 100%);
         color: white;
       }
 
@@ -176,7 +176,7 @@
 
       .btn-add {
         padding: 10px 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #059d32 0%, #4e6c57 100%);
         color: white;
         border: none;
         border-radius: 5px;
@@ -401,16 +401,16 @@
         </div>
         <ul class="menu">
           <li class="menu-item">
-            <a href="/dashboard">📊 Dashboard</a>
+            <a href="/admin/dashboard">Dashboard</a>
           </li>
           <li class="menu-item">
-            <a href="/admin/turnos">🎟️ Gestión de Turnos</a>
+            <a href="/admin/turnos">Gestión de Turnos</a>
           </li>
           <li class="menu-item">
-            <a href="/catalogos" class="active">📚 Catálogos</a>
+            <a href="/admin/catalogos" class="active">Catálogos</a>
           </li>
           <li class="menu-item logout">
-            <a href="#" onclick="cerrarSesion()">🚪 Cerrar Sesión</a>
+            <a href="#" onclick="cerrarSesion()">Cerrar Sesión</a>
           </li>
         </ul>
       </aside>
@@ -441,7 +441,7 @@
           <div class="card-header">
             <h2>Catálogo de Municipios</h2>
             <button class="btn-add" onclick="abrirModalNuevoMunicipio()">
-              ➕ Nuevo Municipio
+              + Nuevo Municipio
             </button>
           </div>
 
@@ -466,7 +466,7 @@
           <div id="message-niveles" class="message"></div>
           <div class="card-header">
             <h2>Catálogo de Niveles</h2>
-            <button class="btn-add" onclick="abrirModalNuevoNivel()">➕ Nuevo Nivel</button>
+            <button class="btn-add" onclick="abrirModalNuevoNivel()">+ Nuevo Nivel</button>
           </div>
 
           <table>
@@ -490,7 +490,7 @@
           <div id="message-asuntos" class="message"></div>
           <div class="card-header">
             <h2>Catálogo de Asuntos</h2>
-            <button class="btn-add" onclick="abrirModalNuevoAsunto()">➕ Nuevo Asunto</button>
+            <button class="btn-add" onclick="abrirModalNuevoAsunto()">+ Nuevo Asunto</button>
           </div>
           
           <table>
@@ -1155,7 +1155,7 @@
 
           localStorage.removeItem("token");
           localStorage.removeItem("usuario");
-          window.location.href = "/login";
+          window.location.href = "/admin/login";
         }
       }
 

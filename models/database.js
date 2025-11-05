@@ -5,7 +5,7 @@ import 'dotenv/config';
 class Database {
   constructor() {
     if (!Database.instance) {
-      this.sequelize = new Sequelize('ticket_test', 'postgres', 'Yair316@!', {
+      this.sequelize = new Sequelize('P2_Ticket', 'postgres', 'Yair316@!', {
         host: 'localhost',
         dialect: 'postgres',
         logging: false,
@@ -17,6 +17,7 @@ class Database {
       this.Asunto = null;
       this.Alumno = null;
       this.Turno = null;
+      this.Administrador = null;
 
       Database.instance = this;
     }
@@ -31,6 +32,7 @@ class Database {
     const { default: AsuntoModel } = await import('./Asunto.js');
     const { default: AlumnoModel } = await import('./Alumno.js');
     const { default: TurnoModel } = await import('./Turno.js');
+    const { default: AdministradorModel } = await import('./Administrador.js');
 
     // If your model factories expect (sequelize, DataTypes), pass DataTypes:
     const DataTypes = Sequelize.DataTypes;
@@ -40,6 +42,7 @@ class Database {
     this.Asunto = AsuntoModel(this.sequelize, DataTypes);
     this.Alumno = AlumnoModel(this.sequelize, DataTypes);
     this.Turno = TurnoModel(this.sequelize, DataTypes);
+    this.Administrador = AdministradorModel(this.sequelize, DataTypes);
 
     this.initializeRelationships();
   }
@@ -78,4 +81,5 @@ export const Municipio = instance.Municipio;
 export const Asunto = instance.Asunto;
 export const Alumno = instance.Alumno;
 export const Turno = instance.Turno;
+export const Administrador = instance.Administrador;
 export const testConnection = instance.testConnection.bind(instance);
