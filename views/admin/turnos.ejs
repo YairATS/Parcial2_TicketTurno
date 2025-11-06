@@ -21,15 +21,44 @@
             min-height: 100vh;
         }
 
+        /* MOBILE MENU TOGGLE */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: linear-gradient(180deg, #61101d 0%, #61101d 100%);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
         /* SIDEBAR */
         .sidebar {
             width: 250px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, #61101d 0%, #61101d 100%);
             color: white;
             padding: 20px;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
@@ -84,6 +113,8 @@
             margin-left: 250px;
             flex: 1;
             padding: 30px;
+            width: 100%;
+            transition: margin-left 0.3s ease;
         }
 
         .header {
@@ -95,6 +126,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .header h1 {
@@ -111,13 +144,14 @@
         .user-avatar {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, #61101d 0%, #61101d 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
+            flex-shrink: 0;
         }
 
         /* BÚSQUEDA */
@@ -137,10 +171,12 @@
         .search-bar {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .search-bar input {
             flex: 1;
+            min-width: 200px;
             padding: 12px;
             border: 2px solid #ddd;
             border-radius: 5px;
@@ -154,13 +190,14 @@
 
         .search-bar button {
             padding: 12px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3aa95b 0%, #36695a 100%);
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .search-bar button:hover {
@@ -176,6 +213,7 @@
             cursor: pointer;
             font-size: 14px;
             margin-top: 10px;
+            width: 100%;
         }
 
         .btn-limpiar:hover {
@@ -188,6 +226,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
         }
 
         .table-header {
@@ -195,6 +234,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .table-header h3 {
@@ -209,6 +250,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 900px;
         }
 
         table th {
@@ -218,6 +260,7 @@
             font-size: 14px;
             color: #666;
             border-bottom: 2px solid #ddd;
+            white-space: nowrap;
         }
 
         table td {
@@ -236,6 +279,7 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .badge.pendiente { background: #fff3cd; color: #856404; }
@@ -247,6 +291,7 @@
         .actions {
             display: flex;
             gap: 5px;
+            flex-wrap: wrap;
         }
 
         .btn-action {
@@ -257,6 +302,7 @@
             font-size: 12px;
             transition: opacity 0.3s;
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .btn-action:hover {
@@ -290,6 +336,7 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 15px;
         }
 
         .modal.show {
@@ -301,7 +348,9 @@
             padding: 30px;
             border-radius: 10px;
             max-width: 500px;
-            width: 90%;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-content h3 {
@@ -314,6 +363,7 @@
             padding: 10px;
             background: #f8f9fa;
             border-radius: 5px;
+            word-break: break-word;
         }
 
         .modal-content .info-item strong {
@@ -345,6 +395,7 @@
             gap: 10px;
             justify-content: flex-end;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         .modal-actions button {
@@ -354,6 +405,8 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: bold;
+            flex: 1;
+            min-width: 100px;
         }
 
         .btn-cancel {
@@ -397,62 +450,182 @@
             color: #666;
         }
 
-        /* RESPONSIVE */
+        /* RESPONSIVE TABLETS */
+        @media (max-width: 1024px) {
+            table {
+                min-width: 800px;
+            }
+
+            .btn-action {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+        }
+
         @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
             .sidebar {
-                width: 200px;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .mobile-overlay.active {
+                display: block;
             }
 
             .main-content {
-                margin-left: 200px;
+                margin-left: 0;
+                padding: 20px 15px;
+                padding-top: 70px;
+            }
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+                width: 100%;
+            }
+
+            .search-section {
+                padding: 15px;
             }
 
             .search-bar {
                 flex-direction: column;
             }
 
+            .search-bar input {
+                width: 100%;
+            }
+
+            .search-bar button {
+                width: 100%;
+            }
+
+            .table-section {
+                padding: 15px;
+            }
+
             table {
-                font-size: 12px;
+                min-width: 700px;
             }
 
             table th,
             table td {
-                padding: 8px;
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+
+            .modal-content {
+                padding: 20px;
             }
         }
 
-        @media (max-width: 576px) {
-            .sidebar {
-                display: none;
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px 10px;
+                padding-top: 60px;
             }
 
-            .main-content {
-                margin-left: 0;
+            .header {
+                padding: 12px 15px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .user-info span {
+                font-size: 14px;
+            }
+
+            .user-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+
+            .search-section h3,
+            .table-header h3 {
+                font-size: 16px;
+            }
+
+            .table-info {
+                font-size: 12px;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            table th,
+            table td {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+
+            .btn-action {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+
+            .badge {
+                padding: 3px 8px;
+                font-size: 10px;
+            }
+
+            .modal-content {
                 padding: 15px;
+            }
+
+            .modal-content h3 {
+                font-size: 18px;
+            }
+
+            .modal-actions button {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+
+            .message {
+                padding: 10px 15px;
+                font-size: 13px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleMenu()">☰</button>
+    <div class="mobile-overlay" onclick="toggleMenu()"></div>
+
     <div class="container">
         <!-- SIDEBAR -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2>🎫 Sistema de Turnos</h2>
+                <h2>Sistema de Turnos</h2>
                 <p>Panel Administrativo</p>
             </div>
             <ul class="menu">
                 <li class="menu-item">
-                    <a href="/admin/dashboard">📊 Dashboard</a>
+                    <a href="/admin/dashboard">Dashboard</a>
                 </li>
                 <li class="menu-item">
-                    <a href="/admin/turnos" class="active">🎟️ Gestión de Turnos</a>
+                    <a href="/admin/turnos" class="active">Gestión de Turnos</a>
                 </li>
                 <li class="menu-item">
-                    <a href="/admin/catalogos">📚 Catálogos</a>
+                    <a href="/admin/catalogos">Catálogos</a>
                 </li>
                 <li class="menu-item logout">
-                    <a href="javascript:void(0)" onclick="cerrarSesion()">🚪 Cerrar Sesión</a>
+                    <a href="javascript:void(0)" onclick="cerrarSesion()">Cerrar Sesión</a>
                 </li>
             </ul>
         </aside>
@@ -551,7 +724,73 @@
     </div>
 
     <script>
-        // NO usar función auto-ejecutable
+        // Mobile menu toggle
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.mobile-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Close menu when clicking on a menu item (mobile)
+        document.querySelectorAll('.menu-item a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleMenu();
+                }
+            });
+        });
+
+        function verificarAutenticacion() {
+            const token = localStorage.getItem('token');
+            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+
+            if (!token || !usuario.nombre) {
+                window.location.href = '/admin/login';
+                return false;
+            }
+
+            return { token, usuario };
+        }
+
+        function inicializarUsuario() {
+            const auth = verificarAutenticacion();
+            if (!auth) return;
+
+            const { usuario } = auth;
+            
+            const nameElement = document.getElementById('user-name');
+            const avatarElement = document.getElementById('user-avatar');
+
+            if (nameElement) {
+                nameElement.textContent = usuario.nombre;
+            }
+
+            if (avatarElement) {
+                avatarElement.textContent = usuario.nombre.charAt(0).toUpperCase();
+            }
+        }
+
+        async function cerrarSesion() {
+            if (!confirm('¿Está seguro de cerrar sesión?')) {
+                return;
+            }
+
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            } finally {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                sessionStorage.clear();
+                window.location.href = '/login';
+            }
+        }
+
         // Variables globales
         let turnoSeleccionado = null;
 
@@ -655,29 +894,44 @@
                 return;
             }
 
+            // Debug: Log first turno to see structure
+            if (turnos.length > 0) {
+                console.log('Estructura del primer turno:', turnos[0]);
+            }
+
             tbody.innerHTML = turnos.map(t => {
-                const alumno = t.Alumno || {};
-                const municipio = alumno.Municipio || {};
-                const asunto = t.Asunto || {};
+                // Try different possible data structures
+                const alumno = t.Alumno || t.alumno || {};
+                const municipio = alumno.Municipio || alumno.municipio || {};
+                const asunto = t.Asunto || t.asunto || {};
+                
+                // Extract values with multiple fallback options
+                const nombreCompleto = alumno.nombre_completo || alumno.nombreCompleto || 
+                                      alumno.nombre || t.nombre_solicitante || 'N/A';
+                const curp = alumno.curp || alumno.CURP || t.curp || 'N/A';
+                const nombreMunicipio = municipio.nombre_municipio || municipio.nombreMunicipio || 
+                                       municipio.nombre || t.municipio || 'N/A';
+                const nombreAsunto = asunto.nombre_asunto || asunto.nombreAsunto || 
+                                    asunto.nombre || t.asunto || 'N/A';
                 
                 return `
                     <tr>
-                        <td><strong>${t.numero_turno}</strong></td>
-                        <td>${alumno.nombre_completo || 'N/A'}</td>
-                        <td>${alumno.curp || 'N/A'}</td>
-                        <td>${municipio.nombre_municipio || 'N/A'}</td>
-                        <td>${asunto.nombre_asunto || 'N/A'}</td>
-                        <td>${new Date(t.fecha_creacion).toLocaleString('es-MX', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})}</td>
+                        <td><strong>${t.numero_turno || t.numeroTurno || 'N/A'}</strong></td>
+                        <td>${nombreCompleto}</td>
+                        <td>${curp}</td>
+                        <td>${nombreMunicipio}</td>
+                        <td>${nombreAsunto}</td>
+                        <td>${new Date(t.fecha_creacion || t.fechaCreacion).toLocaleString('es-MX', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})}</td>
                         <td><span class="badge ${t.estado}">${formatearEstado(t.estado)}</span></td>
                         <td>
                             <div class="actions">
-                                <button class="btn-action btn-edit" onclick="abrirModalEstado(${t.id_turno}, '${t.numero_turno}', '${(alumno.nombre_completo || '').replace(/'/g, "\\'")}', '${alumno.curp || ''}', '${t.estado}')">
+                                <button class="btn-action btn-edit" onclick="abrirModalEstado(${t.id_turno || t.idTurno}, '${(t.numero_turno || t.numeroTurno || '').replace(/'/g, "\\'")}', '${nombreCompleto.replace(/'/g, "\\'")}', '${curp.replace(/'/g, "\\'")}', '${t.estado}')">
                                     ✏️ Estado
                                 </button>
-                                <button class="btn-action btn-pdf" onclick="descargarPDF(${t.id_turno})">
+                                <button class="btn-action btn-pdf" onclick="descargarPDF(${t.id_turno || t.idTurno})">
                                     📄 PDF
                                 </button>
-                                <button class="btn-action btn-delete" onclick="confirmarEliminar(${t.id_turno}, '${t.numero_turno}')">
+                                <button class="btn-action btn-delete" onclick="confirmarEliminar(${t.id_turno || t.idTurno}, '${(t.numero_turno || t.numeroTurno || '').replace(/'/g, "\\'")}')">
                                     🗑️
                                 </button>
                             </div>
@@ -806,13 +1060,26 @@
             document.getElementById('mensaje').classList.remove('show');
         }
 
+        async function cerrarSesion() {
+        if (confirm("¿Está seguro de cerrar sesión?")) {
+          try {
+            await fetch("/api/auth/logout", { method: "POST" });
+          } catch (error) {
+            console.error("Error al cerrar sesión:", error);
+          }
+
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+          window.location.href = "/admin/login";
+        }
+      }
+
         // Cerrar modal al hacer clic fuera
         document.getElementById('modal-estado').addEventListener('click', (e) => {
             if (e.target.id === 'modal-estado') {
                 cerrarModal();
             }
         });
-
     </script>
 </body>
 </html>

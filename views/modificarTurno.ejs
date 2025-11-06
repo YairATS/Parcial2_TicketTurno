@@ -135,6 +135,12 @@
                     <strong>Estado:</strong>
                     <span id="info-estado"></span>
                 </div>
+
+                <div class="info-item" style="margin-top: 20px;">
+                    <button type="button" class="submit-btn" onclick="descargarPDF()" style="width: auto;">
+                        📄 Descargar Comprobante PDF
+                    </button>
+                </div>
             </div>
             
             <h2>Modificar Datos</h2>
@@ -397,6 +403,17 @@
             document.getElementById('search-turno').value = '';
             document.getElementById('mensaje-busqueda').innerHTML = '';
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function descargarPDF() {
+            if (!turnoActual || !turnoActual.id) {
+                alert('No hay un turno cargado para descargar');
+                return;
+            }
+
+            // Abrir el PDF en una nueva pestaña
+            const pdfUrl = `/api/turnos/public/pdf/${turnoActual.id}`;
+            window.open(pdfUrl, '_blank');
         }
     </script>
 </body>
